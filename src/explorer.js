@@ -26,7 +26,7 @@ function createManager(entity) {
 
 }
 function createEntity(parent, entity, listIndex, entityIndex) {
-    kind = parseInt(entity.kind);
+    let kind = parseInt(entity.kind);
     if (kind == 9) {
         createManager(entity);
         return;
@@ -50,8 +50,8 @@ function createEntity(parent, entity, listIndex, entityIndex) {
     parent.appendChild(div);
 }
 
-selectedListIndex = -1;
-selectedEntityIndex = -1;
+let selectedListIndex = -1;
+let selectedEntityIndex = -1;
 
 function selectEntity(listIndex, entityIndex) {
     console.log(listIndex, entityIndex);
@@ -66,12 +66,12 @@ function selectEntity(listIndex, entityIndex) {
         div.classList.add('selected');
     }
     // build description
-    description = '';
+    let description = '';
     if (listIndex != -1) {
-        entity = currentLists[listIndex][entityIndex];
+        let entity = currentLists[listIndex][entityIndex];
         description += nameByKind[entity.kind] + '\n';
-        id = parseInt(entity.id)
-        switch (kind) {
+        let id = parseInt(entity.id)
+        switch (entity.kind) {
             case 3:
                 description += enemies[id] + '\n'
                 break;
@@ -92,7 +92,7 @@ function selectEntity(listIndex, entityIndex) {
 }
 
 function createRoom(parent, roomControls) {
-    div = document.createElement('div');
+    let div = document.createElement('div');
     div.className = 'room';
     div.style.left = roomControls.roomOriginX + 'px';
     div.style.top = roomControls.roomOriginY + 'px';
@@ -101,23 +101,38 @@ function createRoom(parent, roomControls) {
     parent.appendChild(div);
 }
 function createScroll(parent, roomControls) {
-    div = document.createElement('div');
+    let div = document.createElement('div');
     div.className = 'screen';
     div.style.left = roomControls.roomScrollX-1 + 'px';
     div.style.top = roomControls.roomScrollY-1 + 'px';
     div.style.width = '240px';
     div.style.height = '160px';
     parent.appendChild(div);
-    img = document.getElementById('screenshot');
+    let img = document.getElementById('screenshot');
     img.style.left = roomControls.roomScrollX + 'px';
     img.style.top = roomControls.roomScrollY + 'px';
+
+    // Scroll here at the beginning
+    parent.scrollLeft = roomControls.roomScrollX;
+    parent.scrollTop = roomControls.roomScrollY;
 }
 
 
-currentLists = []
+let currentLists = []
 function showLists(roomControls, lists) {
-    currentLists = lists
     var parent = document.getElementById('explorer');
+
+    // Clean up previous
+    selectEntity(-1, -1);
+    for (let i = parent.childNodes.length -1; i >= 0; i--) {
+        let child = parent.childNodes[i];
+        if (child.id != 'screenshot') {
+            parent.removeChild(child);
+        }
+    }
+    document.getElementById('details').innerHTML = 'Click on an entity to show details here.';
+
+    currentLists = lists
     parent.onclick = () => {selectEntity(-1, -1);}
     createRoom(parent, roomControls);
     createScroll(parent, roomControls);

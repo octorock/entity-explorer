@@ -1,4 +1,4 @@
-npcs = [
+let npcs = [
     'DeleteEntity',
     'Gentari',
     'Festari',
@@ -89,8 +89,8 @@ npcs = [
     'Phonograph',
     'NPC58',
     ]
-    
-    enemies= [
+
+let enemies= [
     'OCTOROK',
     'CHUCHU',
     'LEEVER',
@@ -195,8 +195,8 @@ npcs = [
     'TREE_ITEM',
     'ENEMY_66'
     ]
-    
-    objects = [
+
+let objects = [
     'GROUND_ITEM',
     'DEATH_FX',
     'SHOP_ITEM',

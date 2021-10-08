@@ -137,17 +137,16 @@ var parseState = function (state) {
 
     var readUnion = function(reader, union) {
         let res = {}
-        cursor = reader.cursor
-        for (let key in union)
-        {
-            reader.cursor = cursor
-            res[key] = readVar(reader, union[key])
+        let cursor = reader.cursor;
+        for (let key in union) {
+            reader.cursor = cursor;
+            res[key] = readVar(reader, union[key]);
         }
         return res;
     }
 
     var readPointer = function(reader, type) {
-        addr = readVar(reader, 'u32');
+        let addr = readVar(reader, 'u32');
         return {
             'addr': addr,
             'text': '('+type+') 0x' + addr.toString(16)
@@ -168,7 +167,7 @@ var parseState = function (state) {
         }
 
         reader.bitfieldRemaining -= length;
-        val = reader.bitfield & (2**length-1);
+        let val = reader.bitfield & (2**length-1);
         //console.log(reader.bitfield);
         reader.bitfield >>= length;
         //console.log(reader.bitfield);
@@ -193,9 +192,9 @@ var parseState = function (state) {
         }
         if (type.includes('[')) {
             // Array
-            arr = type.split('[')
-            type = arr[0]
-            length = parseInt(arr[1].substring(0, arr[1].length-1))
+            let arr = type.split('[');
+            type = arr[0];
+            length = parseInt(arr[1].substring(0, arr[1].length-1));
             return readArray(reader, type, length);
         }
 
@@ -259,7 +258,7 @@ var parseState = function (state) {
     }
 
     var printVar = function(addr, name, type) {
-        value = readVar(new Reader(addr), type);
+        let value = readVar(new Reader(addr), type);
         globals[name] = value;
         console.log(name + ' >>> ', value);
     }
@@ -276,15 +275,15 @@ var parseState = function (state) {
     printVar(0x3000BF0, 'gRoomControls', 'RoomControls');
     printVar(0x3003D70, 'gEntityLists', 'LinkedList[9]');
 
-    listAddr = 0x3003d70
-    entityLists = globals['gEntityLists']
+    let listAddr = 0x3003d70;
+    let entityLists = globals['gEntityLists'];
     let lists = [];
     for (let i = 0; i < entityLists.length; i++) {
         lists.push([]);
-        first = entityLists[i].first.addr;
+        let first = entityLists[i].first.addr;
         if (first != 0 && first != listAddr + 8*i) {
             // There are elements in this list
-            next = first;
+            let next = first;
             do {
                 let entity = readVar(new Reader(next), 'Entity');
                 lists[i].push(entity);

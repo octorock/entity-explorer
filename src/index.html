@@ -3,10 +3,12 @@
 <head>
     <meta charset="utf-8">
     <title>tmc entity explorer</title>
+    <link rel="shortcut icon" href="favicon.ico" />
     <link rel="stylesheet" href="style.scss" />
 </head>
 <body>
-    <div>
+    <div class="input">
+        Drop a tmc save state from mGBA here to see the entities at that frame.<br />
         <input type="file" id="file" accept=".ss0,.ss1,.ss2,.ss3,.ss4,.ss5,.ss6,.ss7,.ss8,.ss9">
     </div>
     <div class="row">
@@ -14,7 +16,6 @@
         <canvas width="240" height="160" id="screenshot"></canvas>
     </div>
     <div id="details">
-
     </div>
     </div>
     <script type="module" src="main.js"></script>
