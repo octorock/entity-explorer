@@ -2,11 +2,17 @@ var PNGReader = require('./pngjs/PNGReader.js');
 import { structs, unions } from './structs.js';
 import { showLists } from './explorer.js';
 var JSZip = require('jszip');
+import { setupBridge } from './bridge.js';
 
 var reader = new FileReader();
 
 reader.onload = function (event) {
     var bytes = event.target.result;
+
+    loadMgba(bytes);
+};
+
+function loadMgba(bytes) {
     var pngReader = new PNGReader(bytes);
     pngReader.parse(function (err, png, state) {
         if (err) throw err;
@@ -16,9 +22,7 @@ reader.onload = function (event) {
         parseState(state);
         drawOnCanvas(png);
     });
-
-
-};
+}
 
 if (false) {
     // Load initial
@@ -40,29 +44,33 @@ if (false) {
     xhr.send();
 }
 
+function loadBizhawk(data) {
+    var zip = new JSZip();
+    zip.loadAsync(data).then(function(zip) {
+        if (!'Core.bin' in zip.files) {
+            console.error('No Core.bin in save state. Not a BizHawk save?');
+        } else {
+            zip.file('Core.bin').async('uint8array').then(function(state) {
+                // Remove the int describing how long the state is
+                parseState(state.slice(4));
+            });
+        }
+        if (!'Framebuffer.bmp' in zip.files) {
+            console.error('Missing screenshot in save state');
+        } else {
+            zip.file('Framebuffer.bmp').async('blob').then(function(bmp) {
+                drawBmp(bmp);
+            });
+        }
+    });
+}
+
 var file = document.getElementById('file');
 file.onchange = function (event) {
     if (file.files.length > 0) {
         if (file.files[0].name.endsWith('.State')) {
             // BizHawk zip file
-            var zip = new JSZip();
-            zip.loadAsync(file.files[0]).then(function(zip) {
-                if (!'Core.bin' in zip.files) {
-                    console.error('No Core.bin in save state. Not a BizHawk save?');
-                } else {
-                    zip.file('Core.bin').async('uint8array').then(function(state) {
-                        // Remove the int describing how long the state is
-                        parseState(state.slice(4));
-                    });
-                }
-                if (!'Framebuffer.bmp' in zip.files) {
-                    console.error('Missing screenshot in save state');
-                } else {
-                    zip.file('Framebuffer.bmp').async('blob').then(function(bmp) {
-                        drawBmp(bmp);
-                    });
-                }
-            });
+            loadBizhawk(file.files[0])
         } else {
             // mGBA png file
             reader.readAsArrayBuffer(file.files[0]);
@@ -360,7 +368,7 @@ function switchTab(target) {
     activeTab = target;
 }
 
-function setUpTabs() {
+function setupTabs() {
     let buttons = document.getElementsByClassName('tabbutton');
     for (let i = 0; i < buttons.length; i++) {
         let button = buttons[i];
@@ -372,4 +380,10 @@ function setUpTabs() {
         button.onclick = () => {switchTab(target);};
     }
 }
-setUpTabs();
+setupTabs();
+setupBridge();
+
+export {
+    loadMgba,
+    loadBizhawk
+};

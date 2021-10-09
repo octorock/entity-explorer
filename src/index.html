@@ -7,16 +7,26 @@
     <link rel="stylesheet" href="style.scss" />
 </head>
 <body>
+    <div class="row">
     <div class="input">
         Drop a tmc save state from mGBA here to see the entities at that frame.<br />
         <input type="file" id="file" accept=".ss0,.ss1,.ss2,.ss3,.ss4,.ss5,.ss6,.ss7,.ss8,.ss9,.State">
     </div>
+    <div class="tlh-bridge" id="tlh-bridge">
+        <a id="bridge-button">Connect to tlh</a>
+        <div id="bridge-details">
+        <img src="logo.png" height="40" id="bridge-icon"/>
+        <span id="bridge-status">Loading bridge to tlh...</span>
+        <div id="bridge-indicator"></div>
+    </div>
+    </div>
+</div>
     <div class="tabbar">
         <a class="tabbutton active" id="tabb-explorer">Map</a>
         <a class="tabbutton" id="tabb-entity-lists">Entity Lists</a>
         <a class="tabbutton" id="tabb-other-states">Other States</a>
     </div>
-    <div class="row">
+    <div class="row flex">
         <div class="tabs">
             <div id="explorer" class="active">
                 <canvas width="240" height="160" id="screenshot"></canvas>
