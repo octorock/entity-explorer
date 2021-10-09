@@ -254,12 +254,93 @@ let Manager = {
     'independentData': 'u8[32]'
 }
 
+let PlayerState = {
+    'field_0x0': 'u8[2]',
+    'jumpStatus': 'u8',
+    'field_0x3': 'u8[2]',
+    'heldObject': 'u8',
+    'pushedObject': 'u8',
+    'field_0x7': 'u8',
+    'field_0x8': 'u16',
+    'field_0xa': 'u8',
+    'keepFacing': 'u8',
+    'playerAction': 'u8',
+    'field_0xd': 'u8',
+    'field_0xe': 'u8',
+    'hurtBlinkSpeed': 'u8',
+    'field_0x10': 'u8[4]',
+    'field_0x14': 'u8',
+    'field_0x15': 'u8',
+    'startPosX': 'u16',
+    'startPosY': 'u16',
+    'field_0x1a': 'u8[2]',
+    'field_0x1c': 'u8',
+    'field_0x1d': 'u8[5]',
+    'field_0x22': 'u16[2]',
+    'swimState': 'u8',
+    'field_0x27': 'u8[5]',
+    'field_0x2c': 'u8*',
+    'flags': {
+        'type': 'union',
+        'members': {
+            'all': 'u32',
+            'b': {
+                'type': 'struct',
+                'members': {
+                    'unk1': 'u1',
+                    'unk2': 'u1',
+                    'unk4': 'u1',
+                    'noMinishCap': 'u1',
+                    'pullingState': 'u1',
+                    'windyState': 'u1',
+                    'filler6': 'u1',
+                    'unk7': 'u1',
+                    'unk8': 'u1',
+                    'unk9': 'u1',
+                    'slipperyState': 'u1',
+                    'filler11': 'u5',
+                    'filler11b': 'u16',
+                }
+            }
+        }
+    },
+    'field_0x34': 'u8[2]',
+    'field_0x36': 's16',
+    'field_0x38': 'u8',
+    'field_0x39': 'u8',
+    'field_0x3a': 'u8',
+    'field_0x3b': 'u8',
+    'field_0x3c': 'u8[2]',
+    'swordGoldParticle': 'u1',
+    'swordBlueParticle': 'u1',
+    'filler14': 'u6',
+    'field_0x3f': 'u8',
+    'field_0x40': 'u8[64]',
+    'field_0x80': 'u16',
+    'field_0x82': 'u8[9]',
+    'field_0x8b': 'u8',
+    'field_0x8c': 'u32',
+    'field_0x90': 'SplitWord',
+    'field_0x94': 'u32',
+    'field_0x98': 'u16',
+    'field_0x9a': 'u16',
+    'field_0x9c': 'u32',
+    'field_0xa0': 'u8[8]',
+    'field_0xa8': 'u8',
+    'field_0xa9': 'u8',
+    'field_0xaa': 'u8',
+    'field_0xab': 'u8',
+    'field_0xac': 'u16',
+    'field_0xae': 'u16',
+}
+
 let structs = {
     Stats,
     RoomControls,
     LinkedList,
     Entity,
-    Manager
+    Manager,
+    PlayerState
 };
 let unions = {
     SplitWord,

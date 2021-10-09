@@ -148,8 +148,27 @@ function createEntityLists(lists) {
     });
 }
 
+function showState(name, state) {
+    selectEntity(-1, -1);
+    document.getElementById('details').innerHTML = name + '\n\n' + JSON.stringify(state, null, 2);
+}
+
+function createOtherStates(globals) {
+    var parent = document.getElementById('other-states');
+    parent.innerHTML = '';
+    for (let key in globals) {
+        let a = document.createElement('a');
+        a.onclick = () => {
+            showState(key, globals[key]);
+        };
+        a.innerHTML = key;
+        parent.appendChild(a);
+        parent.appendChild(document.createElement('br'));
+    }
+}
+
 let currentLists = []
-function showLists(roomControls, lists) {
+function showLists(roomControls, lists, globals) {
     var parent = document.getElementById('explorer');
 
     // Clean up previous
@@ -172,6 +191,7 @@ function showLists(roomControls, lists) {
             createEntity(parent, entity, listIndex, entityIndex);
         })
     });
+    createOtherStates(globals);
 }
 export {
     showLists

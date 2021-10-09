@@ -296,17 +296,19 @@ var parseState = function (state) {
         console.log(name + ' >>> ', value);
     }
 
-    readU8(3, 0x3DBC, 'gEntCount');
+/*    readU8(3, 0x3DBC, 'gEntCount');
     readU8(2, 0x2AE8 + 0, 'gStats.walletType');
     readU8(2, 0x2AE8 + 1, 'gStats.heartPieces');
     readU8(2, 0x2AE8 + 2, 'gStats.health');
     readU8(2, 0x2AE8 + 3, 'gStats.maxHealth');
-    readU16(2, 0x2AE8 + 0x18, 'gStats.rupees');
+    readU16(2, 0x2AE8 + 0x18, 'gStats.rupees');*/
 
+    // Read all interesting states into the globals object.
     printVar(0x3003DBC, 'gEntCount', 'u8');
     printVar(0x2002AE8, 'gStats', 'Stats');
     printVar(0x3000BF0, 'gRoomControls', 'RoomControls');
     printVar(0x3003D70, 'gEntityLists', 'LinkedList[9]');
+    printVar(0x3003F80, 'gPlayerState', 'PlayerState');
 
     let listAddr = 0x3003d70;
     let entityLists = globals['gEntityLists'];
@@ -334,7 +336,7 @@ var parseState = function (state) {
 
     console.log(lists);
 
-    showLists(globals['gRoomControls'], lists);
+    showLists(globals['gRoomControls'], lists, globals);
 }
 
 
