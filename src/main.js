@@ -1,6 +1,8 @@
 var PNGReader = require('./pngjs/PNGReader.js');
 import { structs, unions } from './structs.js';
 import { showLists } from './explorer.js';
+var JSZip = require('jszip');
+
 var reader = new FileReader();
 
 reader.onload = function (event) {
@@ -41,7 +43,30 @@ if (false) {
 var file = document.getElementById('file');
 file.onchange = function (event) {
     if (file.files.length > 0) {
-        reader.readAsArrayBuffer(file.files[0]);
+        if (file.files[0].name.endsWith('.State')) {
+            // BizHawk zip file
+            var zip = new JSZip();
+            zip.loadAsync(file.files[0]).then(function(zip) {
+                if (!'Core.bin' in zip.files) {
+                    console.error('No Core.bin in save state. Not a BizHawk save?');
+                } else {
+                    zip.file('Core.bin').async('uint8array').then(function(state) {
+                        // Remove the int describing how long the state is
+                        parseState(state.slice(4));
+                    });
+                }
+                if (!'Framebuffer.bmp' in zip.files) {
+                    console.error('Missing screenshot in save state');
+                } else {
+                    zip.file('Framebuffer.bmp').async('blob').then(function(bmp) {
+                        drawBmp(bmp);
+                    });
+                }
+            });
+        } else {
+            // mGBA png file
+            reader.readAsArrayBuffer(file.files[0]);
+        }
     }
 }
 
@@ -71,6 +96,14 @@ var drawOnCanvas = function (png) {
 
     ctx.putImageData(canvasData, 0, 0);
 
+}
+
+var drawBmp = function(bmp) {
+    var canvas = document.getElementById('screenshot');
+    var ctx = canvas.getContext('2d');
+    createImageBitmap(bmp).then(img => {
+        ctx.drawImage(img, 0, 0);
+    });
 }
 
 var globals = {};
@@ -243,7 +276,7 @@ var parseState = function (state) {
             case 'u5':
             case 'u6':
             case 'u7':
-                readBitfield(reader, parseInt(type.substring(1)))
+                return readBitfield(reader, parseInt(type.substring(1)));
                 break;
 
             default:

@@ -44,7 +44,7 @@ function createEntity(parent, entity, listIndex, entityIndex) {
     //console.log(entity.kind +','+colorByKind[entity.kind]);
     div.style.backgroundColor = colorByKind[entity.kind];
     /*let pre = document.createElement('pre');
-    
+
     pre.innerHTML = description;
     div.appendChild(pre);*/
     parent.appendChild(div);
@@ -54,7 +54,6 @@ let selectedListIndex = -1;
 let selectedEntityIndex = -1;
 
 function selectEntity(listIndex, entityIndex) {
-    console.log(listIndex, entityIndex);
     if (selectedEntityIndex != -1) {
         let div = document.getElementById('entity_'+selectedListIndex+'_'+selectedEntityIndex);
         div.classList.remove('selected');
@@ -138,7 +137,6 @@ function showLists(roomControls, lists) {
     createScroll(parent, roomControls);
     lists.forEach((list, listIndex) => {
         list.forEach((entity, entityIndex) => {
-            console.log(entity);
             createEntity(parent, entity, listIndex, entityIndex);
         })
     });
