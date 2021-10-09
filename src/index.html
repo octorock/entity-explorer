@@ -11,10 +11,20 @@
         Drop a tmc save state from mGBA here to see the entities at that frame.<br />
         <input type="file" id="file" accept=".ss0,.ss1,.ss2,.ss3,.ss4,.ss5,.ss6,.ss7,.ss8,.ss9,.State">
     </div>
-    <div class="row">
-    <div id="explorer">
-        <canvas width="240" height="160" id="screenshot"></canvas>
+    <div class="tabbar">
+        <a class="tabbutton active" id="tabb-explorer">Map</a>
+        <a class="tabbutton" id="tabb-entity-lists">Entity Lists</a>
     </div>
+    <div class="row">
+        <div class="tabs">
+            <div id="explorer" class="active">
+                <canvas width="240" height="160" id="screenshot"></canvas>
+            </div>
+            <div id="entity-lists">
+            </div>
+            <div id="other-states">
+            </div>
+        </div>
     <div id="details">
     </div>
     </div>

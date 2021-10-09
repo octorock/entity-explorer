@@ -318,7 +318,14 @@ var parseState = function (state) {
             // There are elements in this list
             let next = first;
             do {
-                let entity = readVar(new Reader(next), 'Entity');
+
+                let entity;
+                let kind = dv.getUint8(convAddr(next+8));
+                if (kind == 9) {
+                    entity = readVar(new Reader(next), 'Manager');
+                } else {
+                    entity = readVar(new Reader(next), 'Entity');
+                }
                 lists[i].push(entity);
                 next = entity.next.addr;
             } while (next != listAddr + 8*i);
@@ -330,3 +337,37 @@ var parseState = function (state) {
     showLists(globals['gRoomControls'], lists);
 }
 
+
+
+// Set up tabs
+let activeTab = 'explorer';
+
+function switchTab(target) {
+    console.log(target);
+    let buttons = document.getElementsByClassName('tabbutton');
+    for (let i = 0; i < buttons.length; i++) {
+        let button = buttons[i];
+        if (button.id != 'tabb-'+target) {
+            button.classList.remove('active');
+        } else {
+            button.classList.add('active');
+        }
+    }
+    document.getElementById(activeTab).classList.remove('active');
+    document.getElementById(target).classList.add('active');
+    activeTab = target;
+}
+
+function setUpTabs() {
+    let buttons = document.getElementsByClassName('tabbutton');
+    for (let i = 0; i < buttons.length; i++) {
+        let button = buttons[i];
+        console.log(button);
+        if (!button.id.startsWith('tabb-')) {
+            console.error(`Invalid tab button id: ${button.id}`);
+        }
+        let target = button.id.substring(5);
+        button.onclick = () => {switchTab(target);};
+    }
+}
+setUpTabs();

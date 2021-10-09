@@ -235,11 +235,31 @@ let SplitHWord = {
     }
 }
 
+
+let Manager = {
+    'prev': 'Manager*',
+    'next': 'Manager*',
+    'kind': 'u8',
+    'id': 'u8',
+    'unk_0a': 'u8',
+    'unk_0b': 'u8',
+    'action': 'u8',
+    'unk_0d': 'u8',
+    'unk_0e': 'u8',
+    'unk_0f': 'u8',
+    'unk_10': 'u8',
+    'unk_11': 'u8[3]',
+    'parent': 'Manager*',
+    'unk_18': 'u8[8]',
+    'independentData': 'u8[32]'
+}
+
 let structs = {
     Stats,
     RoomControls,
     LinkedList,
-    Entity
+    Entity,
+    Manager
 };
 let unions = {
     SplitWord,

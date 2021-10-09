@@ -53,38 +53,50 @@ function createEntity(parent, entity, listIndex, entityIndex) {
 let selectedListIndex = -1;
 let selectedEntityIndex = -1;
 
+function getHumanName(entity) {
+    let arr = [];
+    arr.push(nameByKind[entity.kind]);
+    let id = parseInt(entity.id)
+    switch (entity.kind) {
+        case 3:
+            arr.push(enemies[id]);
+            break;
+        case 6:
+            arr.push(objects[id]);
+            break;
+        case 7:
+            arr.push(npcs[id]);
+            break;
+        default:
+            arr.push(id.toString(16));
+            break;
+
+    }
+    return arr;
+}
+
 function selectEntity(listIndex, entityIndex) {
     if (selectedEntityIndex != -1) {
         let div = document.getElementById('entity_'+selectedListIndex+'_'+selectedEntityIndex);
-        div.classList.remove('selected');
+        if (div) {
+            div.classList.remove('selected');
+        }
     }
     selectedListIndex = listIndex;
     selectedEntityIndex = entityIndex;
     if (selectedEntityIndex != -1) {
         let div = document.getElementById('entity_'+selectedListIndex+'_'+selectedEntityIndex);
-        div.classList.add('selected');
+        if (div) {
+            div.classList.add('selected');
+        }
     }
     // build description
     let description = '';
     if (listIndex != -1) {
         let entity = currentLists[listIndex][entityIndex];
-        description += nameByKind[entity.kind] + '\n';
-        let id = parseInt(entity.id)
-        switch (entity.kind) {
-            case 3:
-                description += enemies[id] + '\n'
-                break;
-            case 6:
-                description += objects[id] + '\n'
-                break;
-            case 7:
-                description += npcs[id] + '\n'
-                break;
-            default:
-                description += id.toString(16) + '\n'
-                break;
 
-        }
+        let name = getHumanName(entity);
+        description += name[0] + '\n' + name[1] + '\n';
         description += JSON.stringify(entity, null, 2);
     }
     document.getElementById('details').innerHTML = description;
@@ -117,6 +129,25 @@ function createScroll(parent, roomControls) {
 }
 
 
+function createEntityLists(lists) {
+    var parent = document.getElementById('entity-lists');
+    parent.innerHTML = '';
+
+    lists.forEach((list, listIndex) => {
+        let p = document.createElement('p');
+        p.innerHTML = 'List ' + listIndex;
+        parent.appendChild(p);
+        list.forEach((entity, entityIndex) => {
+            let a = document.createElement('a');
+            a.onclick = () => {selectEntity(listIndex, entityIndex);};
+            let name = getHumanName(entity);
+            a.innerHTML =  name[0] + ' ' + name[1];
+            parent.appendChild(a);
+            parent.appendChild(document.createElement('br'));
+        });
+    });
+}
+
 let currentLists = []
 function showLists(roomControls, lists) {
     var parent = document.getElementById('explorer');
@@ -133,6 +164,7 @@ function showLists(roomControls, lists) {
 
     currentLists = lists
     parent.onclick = () => {selectEntity(-1, -1);}
+    createEntityLists(lists);
     createRoom(parent, roomControls);
     createScroll(parent, roomControls);
     lists.forEach((list, listIndex) => {
@@ -141,7 +173,6 @@ function showLists(roomControls, lists) {
         })
     });
 }
-
 export {
     showLists
 };
