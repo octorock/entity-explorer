@@ -489,7 +489,6 @@ file.onchange = function(event) {
                 else zip1.file('Framebuffer.bmp').async('blob').then(function(bmp) {
                     drawBmp(bmp);
                 });
-                console.log(zip1);
             });
         } else // mGBA png file
         reader.readAsArrayBuffer(file.files[0]);
@@ -699,7 +698,10 @@ var parseState = function(state1) {
             // There are elements in this list
             let next = first;
             do {
-                let entity = readVar(new Reader(next), 'Entity');
+                let entity;
+                let kind = dv.getUint8(convAddr(next + 8));
+                if (kind == 9) entity = readVar(new Reader(next), 'Manager');
+                else entity = readVar(new Reader(next), 'Entity');
                 lists[i].push(entity);
                 next = entity.next.addr;
             }while (next != listAddr + 8 * i)
@@ -708,6 +710,33 @@ var parseState = function(state1) {
     console.log(lists);
     _explorerJs.showLists(globals['gRoomControls'], lists);
 };
+// Set up tabs
+let activeTab = 'explorer';
+function switchTab(target) {
+    console.log(target);
+    let buttons = document.getElementsByClassName('tabbutton');
+    for(let i = 0; i < buttons.length; i++){
+        let button = buttons[i];
+        if (button.id != 'tabb-' + target) button.classList.remove('active');
+        else button.classList.add('active');
+    }
+    document.getElementById(activeTab).classList.remove('active');
+    document.getElementById(target).classList.add('active');
+    activeTab = target;
+}
+function setUpTabs() {
+    let buttons = document.getElementsByClassName('tabbutton');
+    for(let i = 0; i < buttons.length; i++){
+        let button = buttons[i];
+        console.log(button);
+        if (!button.id.startsWith('tabb-')) console.error(`Invalid tab button id: ${button.id}`);
+        let target = button.id.substring(5);
+        button.onclick = ()=>{
+            switchTab(target);
+        };
+    }
+}
+setUpTabs();
 
 },{"./pngjs/PNGReader.js":"9Q0Cr","./structs.js":"chnWa","./explorer.js":"847CC","jszip":"mnHCj"}],"9Q0Cr":[function(require,module,exports) {
 var Buffer = require("buffer").Buffer;
@@ -14875,11 +14904,29 @@ let SplitHWord = {
         }
     }
 };
+let Manager = {
+    'prev': 'Manager*',
+    'next': 'Manager*',
+    'kind': 'u8',
+    'id': 'u8',
+    'unk_0a': 'u8',
+    'unk_0b': 'u8',
+    'action': 'u8',
+    'unk_0d': 'u8',
+    'unk_0e': 'u8',
+    'unk_0f': 'u8',
+    'unk_10': 'u8',
+    'unk_11': 'u8[3]',
+    'parent': 'Manager*',
+    'unk_18': 'u8[8]',
+    'independentData': 'u8[32]'
+};
 let structs = {
     Stats,
     RoomControls,
     LinkedList,
-    Entity
+    Entity,
+    Manager
 };
 let unions = {
     SplitWord,
@@ -14944,37 +14991,43 @@ function createEntity(parent, entity, listIndex, entityIndex) {
 }
 let selectedListIndex = -1;
 let selectedEntityIndex = -1;
+function getHumanName(entity) {
+    let arr = [];
+    arr.push(nameByKind[entity.kind]);
+    let id = parseInt(entity.id);
+    switch(entity.kind){
+        case 3:
+            arr.push(_enumsJs.enemies[id]);
+            break;
+        case 6:
+            arr.push(_enumsJs.objects[id]);
+            break;
+        case 7:
+            arr.push(_enumsJs.npcs[id]);
+            break;
+        default:
+            arr.push(id.toString(16));
+            break;
+    }
+    return arr;
+}
 function selectEntity(listIndex, entityIndex) {
     if (selectedEntityIndex != -1) {
         let div = document.getElementById('entity_' + selectedListIndex + '_' + selectedEntityIndex);
-        div.classList.remove('selected');
+        if (div) div.classList.remove('selected');
     }
     selectedListIndex = listIndex;
     selectedEntityIndex = entityIndex;
     if (selectedEntityIndex != -1) {
         let div = document.getElementById('entity_' + selectedListIndex + '_' + selectedEntityIndex);
-        div.classList.add('selected');
+        if (div) div.classList.add('selected');
     }
     // build description
     let description = '';
     if (listIndex != -1) {
         let entity = currentLists[listIndex][entityIndex];
-        description += nameByKind[entity.kind] + '\n';
-        let id = parseInt(entity.id);
-        switch(entity.kind){
-            case 3:
-                description += _enumsJs.enemies[id] + '\n';
-                break;
-            case 6:
-                description += _enumsJs.objects[id] + '\n';
-                break;
-            case 7:
-                description += _enumsJs.npcs[id] + '\n';
-                break;
-            default:
-                description += id.toString(16) + '\n';
-                break;
-        }
+        let name = getHumanName(entity);
+        description += name[0] + '\n' + name[1] + '\n';
         description += JSON.stringify(entity, null, 2);
     }
     document.getElementById('details').innerHTML = description;
@@ -15003,6 +15056,25 @@ function createScroll(parent, roomControls) {
     parent.scrollLeft = roomControls.roomScrollX;
     parent.scrollTop = roomControls.roomScrollY;
 }
+function createEntityLists(lists) {
+    var parent = document.getElementById('entity-lists');
+    parent.innerHTML = '';
+    lists.forEach((list, listIndex)=>{
+        let p = document.createElement('p');
+        p.innerHTML = 'List ' + listIndex;
+        parent.appendChild(p);
+        list.forEach((entity, entityIndex)=>{
+            let a = document.createElement('a');
+            a.onclick = ()=>{
+                selectEntity(listIndex, entityIndex);
+            };
+            let name = getHumanName(entity);
+            a.innerHTML = name[0] + ' ' + name[1];
+            parent.appendChild(a);
+            parent.appendChild(document.createElement('br'));
+        });
+    });
+}
 let currentLists = [];
 function showLists(roomControls, lists) {
     var parent = document.getElementById('explorer');
@@ -15017,6 +15089,7 @@ function showLists(roomControls, lists) {
     parent.onclick = ()=>{
         selectEntity(-1, -1);
     };
+    createEntityLists(lists);
     createRoom(parent, roomControls);
     createScroll(parent, roomControls);
     lists.forEach((list, listIndex)=>{
