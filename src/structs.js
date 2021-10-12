@@ -334,13 +334,72 @@ let PlayerState = {
     'field_0xae': 'u16',
 }
 
+let RoomVars = {
+    'field_0x0': 'u8',
+    'filler_0x1': 'u8',
+    'field_0x2': 'u8',
+    'field_0x3': 'u8',
+    'field_0x4': 'u8',
+    'filler1': 'u8[1]',
+    'itemForSaleIndex': 'u8',
+    'field_0x7': 'u8',
+    'field_0x8': 'u8',
+    'field_0x9': 'u8',
+    'unk2': 'u8',
+    'filler2': 'u8',
+    'field_0xc': 'u16',
+    'filler3': 'u8[2]',
+    'unk_10': 'u8[4]',
+    'roomFlags': 'u32',
+    'unk3': 'u32',
+    'filler4': 'u8[48]',
+    'filler5': 'u8[28]',
+    'greatFairyState': 'u32',
+    'field_0x6c': 'u32*',
+    'field_0x70': 'u32*',
+    'field_0x74': 'u32*',
+    'field_0x78': 'u32',
+    'field_0x79': 'u8[10]',
+    'field_0x88': 'void*',
+};
+
+let Area = {
+    'areaMetadata': 'u8',
+    'locationIndex': 'u8',
+    'unk': 'u8',
+    'regret': 'u8',
+    'localFlagOffset': 'u16',
+    'filler': 'u8[4]',
+    'unk_0a': 'u16',
+    'filler3': 'u8[4]',
+    'field_0x10': 'u16',
+    'curPortalX': 'u16',
+    'curPortalY': 'u16',
+    'curPortalExitDirection': 'u8',
+    'curPortalType': 'u8',
+    'field_0x18': 'u8',
+    'playShrinkSeq': 'u8',
+    'unk1A': 'u8',
+    'filler2': 'u8[13]',
+    'field_0x28': 'u8',
+    'filler4': 'u8[0x834]',
+    'musicIndex': 'u32',
+    'pMusicIndex': 'u32',
+    'filler5': 'u8[0x20]',
+    'unk2': 'u32',
+    'unk3': 'u32',
+    'unk4': 'u32',
+};
+
 let structs = {
     Stats,
     RoomControls,
     LinkedList,
     Entity,
     Manager,
-    PlayerState
+    PlayerState,
+    RoomVars,
+    Area
 };
 let unions = {
     SplitWord,

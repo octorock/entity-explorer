@@ -1,4 +1,4 @@
-import {enemies, npcs, objects} from './enums.js';
+import {enemies, npcs, objects, globalFlags} from './enums.js';
 
 let nameByKind = {
     '1': 'PLAYER',
@@ -167,6 +167,42 @@ function createOtherStates(globals) {
     }
 }
 
+function addHeading(parent, text) {
+    let p = document.createElement('p');
+    p.innerHTML = text;
+    parent.appendChild(p);
+}
+
+function createFlags(flags, area) {
+    var parent = document.getElementById('flags');
+    parent.innerHTML = '';
+
+    addHeading(parent, 'Global Flags');
+    for (let i = 0; i < globalFlags.length; i++) {
+        let checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.readOnly = true;
+        checkbox.disabled = true;
+        checkbox.checked = flags[i] == 1;
+        parent.appendChild(checkbox);
+        parent.appendChild(document.createTextNode(globalFlags[i]));
+        parent.appendChild(document.createElement('br'));
+    }
+
+    addHeading(parent, 'Local Flags (Offset: 0x' + area.localFlagOffset.toString(16) + ')');
+    for (let i = 0; i < 256; i++) { // TODO determine how many local flags there are in this area?
+        let checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.readOnly = true;
+        checkbox.disabled = true;
+        checkbox.checked = flags[area.localFlagOffset+i] == 1;
+        parent.appendChild(checkbox);
+        parent.appendChild(document.createTextNode('0x' + i.toString(16)));
+        parent.appendChild(document.createElement('br'));
+    }
+}
+
+
 let currentLists = []
 function showLists(roomControls, lists, globals) {
     var parent = document.getElementById('explorer');
@@ -191,6 +227,7 @@ function showLists(roomControls, lists, globals) {
             createEntity(parent, entity, listIndex, entityIndex);
         })
     });
+    createFlags(globals['gGlobalFlags'], globals['gArea']);
     createOtherStates(globals);
 }
 export {

@@ -317,6 +317,9 @@ var parseState = function (state) {
     printVar(0x3000BF0, 'gRoomControls', 'RoomControls');
     printVar(0x3003D70, 'gEntityLists', 'LinkedList[9]');
     printVar(0x3003F80, 'gPlayerState', 'PlayerState');
+    printVar(0x2002C9C, 'gGlobalFlags', 'u1[4096]');
+    printVar(0x2034350, 'gRoomVars', 'RoomVars');
+    printVar(0x2033A90, 'gArea', 'Area');
 
     let listAddr = 0x3003d70;
     let entityLists = globals['gEntityLists'];
