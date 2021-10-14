@@ -1,4 +1,4 @@
-import {enemies, npcs, objects, globalFlags} from './enums.js';
+import {enemies, npcs, objects, globalFlags, projectiles} from './enums.js';
 
 let nameByKind = {
     '1': 'PLAYER',
@@ -60,6 +60,9 @@ function getHumanName(entity) {
     switch (entity.kind) {
         case 3:
             arr.push(enemies[id]);
+            break;
+        case 4:
+            arr.push(projectiles[id]);
             break;
         case 6:
             arr.push(objects[id]);
