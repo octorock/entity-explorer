@@ -215,8 +215,9 @@ let Entity = {
     'field_0x7c': 'SplitWord',
     'field_0x80': 'SplitHWord',
     'field_0x82': 'SplitHWord',
-    'cutsceneBeh': 'SplitHWord',
-    'field_0x86': 'SplitHWord',
+    'cutsceneBeh': 'ScriptExecutionContext*',
+    //'cutsceneBeh': 'SplitHWord',
+    //'field_0x86': 'SplitHWord',
 }
 
 let LinkedList = {
@@ -391,6 +392,30 @@ let Area = {
     'unk4': 'u32',
 };
 
+let TileEntityDefinition = {
+    'type': 'u8',
+    'param_a': 'u8',
+    'param_b': 'u16',
+    'param_c': 'u16',
+    'param_d': 'u16',
+};
+
+let ScriptExecutionContext = {
+    'scriptInstructionPointer': 'u16*',
+    'intVariable': 'u32',
+    'postScriptActions': 'u32',
+    'unk_0C': 'u8[0x4]',
+    'wait': 'u16',
+    'unk_12': 'u16',
+    'condition': 'u32',
+    'unk_18': 'u8',
+    'unk_19': 'u8',
+    'unk_1A': 'u8',
+    'unk_1B': 'u8',
+    'x': 'SplitWord',
+    'y': 'SplitWord',
+};
+
 let structs = {
     Stats,
     RoomControls,
@@ -399,7 +424,9 @@ let structs = {
     Manager,
     PlayerState,
     RoomVars,
-    Area
+    Area,
+    TileEntityDefinition,
+    ScriptExecutionContext
 };
 let unions = {
     SplitWord,

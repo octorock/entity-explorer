@@ -176,3 +176,12 @@ body {
         margin-left: 10px;
     }
 }
+
+#details a{
+    display: inline-block;
+    color: #aaf;
+    padding: 8px 0px;
+    &:hover {
+        color: #88f;
+    }
+}

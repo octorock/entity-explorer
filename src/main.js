@@ -320,6 +320,9 @@ var parseState = function (state) {
     printVar(0x2002C9C, 'gGlobalFlags', 'u1[4096]');
     printVar(0x2034350, 'gRoomVars', 'RoomVars');
     printVar(0x2033A90, 'gArea', 'Area');
+    printVar(0x2017660, 'gSmallChests', 'TileEntityDefinition[8]'); // TODO maybe only small chest?
+    printVar(0x2022750, 'gPlayerScriptExecutionContext', 'ScriptExecutionContext');
+    printVar(0x2036570, 'gScriptExecutionContextArray', 'ScriptExecutionContext[0x20]');
 
     let listAddr = 0x3003d70;
     let entityLists = globals['gEntityLists'];

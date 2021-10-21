@@ -95,14 +95,36 @@ function selectEntity(listIndex, entityIndex) {
     }
     // build description
     let description = '';
+
     if (listIndex != -1) {
         let entity = currentLists[listIndex][entityIndex];
+
+        // Link the script execution context
+        if (entity.cutsceneBeh !== undefined && entity.cutsceneBeh.addr > 0) {
+            let script = -2;
+            if (entity.cutsceneBeh.addr == 0x2022750) { // gPlayerScriptExecutionContext
+                script = -1;
+            } else if(entity.cutsceneBeh.addr >= 0x2036570 && entity.cutsceneBeh.addr <0x2036570+0x20*36) { // gScriptExecutionContextArray
+                script = (entity.cutsceneBeh.addr-0x2036570) / 36
+            }
+            if (script != -2) {
+                description = '<a href="javascript:showScript('+script+')">Show script execution context</a><br/>'
+            }
+        }
 
         let name = getHumanName(entity);
         description += name[0] + '\n' + name[1] + '\n';
         description += JSON.stringify(entity, null, 2);
     }
     document.getElementById('details').innerHTML = description;
+}
+
+window.showScript = function(id) {
+    if (id == -1) {
+        showState('gPlayerScriptExecutionContext', currentGlobals['gPlayerScriptExecutionContext'])
+    } else {
+        showState('gScriptExecutionContextArray['+id+']', currentGlobals['gScriptExecutionContextArray'][id])
+    }
 }
 
 function createRoom(parent, roomControls) {
@@ -207,6 +229,7 @@ function createFlags(flags, area) {
 
 
 let currentLists = []
+let currentGlobals = {}
 function showLists(roomControls, lists, globals) {
     var parent = document.getElementById('explorer');
 
@@ -221,6 +244,7 @@ function showLists(roomControls, lists, globals) {
     document.getElementById('details').innerHTML = 'Click on an entity to show details here.';
 
     currentLists = lists
+    currentGlobals = globals
     parent.onclick = () => {selectEntity(-1, -1);}
     createEntityLists(lists);
     createRoom(parent, roomControls);
