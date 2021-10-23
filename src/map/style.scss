@@ -1,0 +1,16 @@
+.pixel {
+    display: inline-block;
+    width: 1px;
+    height: 1px;
+}
+
+.content {
+    overflow-y: scroll;
+}
+
+#symbol {
+    font-family: monospace;
+    font-size: 20px;
+    padding: 8px;
+    display: block;
+}

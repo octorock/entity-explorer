@@ -1,7 +1,10 @@
 {
   "name": "entity-explorer",
   "version": "0.0.1",
-  "source": "src/index.html",
+  "source": [
+    "src/index.html",
+    "src/map/index.html"
+  ],
   "author": "octorock",
   "license": "MIT",
   "devDependencies": {
@@ -13,7 +16,7 @@
   "scripts": {
     "start": "parcel",
     "build": "parcel build ",
-    "deploy": "rm dist/* && parcel build --public-url /entity-explorer/ && gh-pages -d dist"
+    "deploy": "rm -r dist/* && parcel build --public-url /entity-explorer/ && gh-pages -d dist"
   },
   "dependencies": {
     "jszip": "^3.7.1"
