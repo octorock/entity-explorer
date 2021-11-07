@@ -78,7 +78,7 @@ let offset = 0x8000000
 let symbols = []
 
 let canvasWidth = 1024, canvasHeight = 1024;
-let mode = 0;
+let mode = 3;
 
 function redrawCanvas() {
     hoverOverSymbols = false
@@ -95,20 +95,35 @@ let typeRegexes = {
     'data/gfx/sprite_gfx.o': 5, // TODO not correctly split up into sprites yet
     '^data/gfx/.*': 6,
     //'data/data_08132B30.o': 7, // TODO maybe not everything in this file is graphics/maps
+    '^data/animations/.*': 6,
 
     // maps/tilesets
-    '^data/map/.*': 20,
+    '^data/map/.*': 21,
 
     // code
-    'data/strings.o': 5,
-    'data/scripts.o': 4,
+    'data/strings.o': 2,
+    'data/scripts.o': 1,
     // data
-    '^data/animations/.*': 15,
     '^data/const/.*': 14,
 
     '^asm/.*': 13,
     '^data/.*': 16,
     '^src/.*': 3,
+}
+
+let legend = {
+    'Code': 3,
+    'Scripts': 1,
+    'Strings': 2,
+
+    'Unknown Data': 16,
+    'Assembly': 13,
+    'Const Data': 14,
+
+    'Map': 21,
+    'Sprites': 5,
+    'Graphics': 6,
+    'Audio': 24,
 }
 
 //  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
@@ -174,7 +189,22 @@ function drawPalette() {
     document.body.appendChild(parent)
 
 }
-drawPalette();
+
+//drawPalette();
+
+function addLegend() {
+    let parent = document.createElement('div')
+    parent.id = 'legend'
+    for (let key in legend) {
+        let color = document.createElement('div');
+        color.innerHTML = key;
+        color.style.borderColor = colors[legend[key]];
+        parent.appendChild(color);
+    }
+    document.body.appendChild(parent);
+}
+addLegend();
+
 for (let i = 0; i < colors.length; i++) {
     colors[i] = hexToRgb(colors[i])
 }
@@ -325,6 +355,9 @@ function changeMode(newMode) {
     if (symbols.length > 0) {
         redrawCanvas();
     }
+
+    // Only show legend for "Color type" mode
+    document.getElementById('legend').style.display = mode == 3 ? 'block' : 'none';
 }
 
 // document.getElementById('next').onclick = () => changeOffset(canvasWidth*canvasHeight)

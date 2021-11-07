@@ -14,3 +14,21 @@
     padding: 8px;
     display: block;
 }
+
+#legend {
+    display: block;
+    position: fixed;
+    top: 120px;
+    right: 40px;
+    background: rgba(0,0,0,0.1);
+    padding: 8px;
+    border-radius: 4px;
+    div {
+        border-left: 24px solid;
+        height: 24px;
+        padding-left: 6px;
+        vertical-align: middle;
+        line-height: 24px;
+        margin: 4px 0px;
+    }
+}
