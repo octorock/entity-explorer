@@ -1,8 +1,25 @@
 var PNGReader = require('./pngjs/PNGReader.js');
-import { structs, unions } from './structs.js';
+import structs from './structs.json';
 import { showLists } from './explorer.js';
 var JSZip = require('jszip');
 import { setupBridge } from './bridge.js';
+
+
+// Replace type,subtype from Manager with kind,id to be the same as Enemy struct.
+// Needs to keep the order of the keys.
+let members = structs['Manager']['members'];
+let changedMembers = {};
+for (let key of Object.keys(members)) {
+    if (key == 'type') {
+        changedMembers['kind'] = members[key];
+    } else if (key == 'subtype') {
+        changedMembers['id'] = members[key];
+    } else {
+        changedMembers[key] = members[key];
+    }
+}
+structs['Manager']['members'] = changedMembers;
+
 
 var reader = new FileReader();
 
@@ -16,9 +33,9 @@ function loadMgba(bytes) {
     var pngReader = new PNGReader(bytes);
     pngReader.parse(function (err, png, state) {
         if (err) throw err;
-        console.log('image is <' + png.width + ',' + png.height + '>');
-        console.log(png);
-        console.log(state);
+        // console.log('image is <' + png.width + ',' + png.height + '>');
+        // console.log(png);
+        // console.log(state);
         parseState(state);
         drawOnCanvas(png);
     });
@@ -150,14 +167,6 @@ var parseState = function (state) {
         }
     }
 
-
-    var readU8 = function (type, addr, name) {
-        console.log(name + ': ' + state[getAddr(type, addr)]);
-    }
-    var readU16 = function (type, addr, name) {
-        console.log(name + ': ' + dv.getUint16(getAddr(type, addr), true));
-    }
-
     var readStruct = function(reader, struct) {
         let res = {};
         //console.log(struct);
@@ -238,8 +247,12 @@ var parseState = function (state) {
             length = parseInt(arr[1].substring(0, arr[1].length-1));
             return readArray(reader, type, length);
         }
-
+        if (type.includes(':')) {
+            // Bitfield types
+            return readBitfield(reader, parseInt(type.split(':')[1]));
+        }
         switch (type) {
+            case 'bool8':
             case 'u8':
             {
                 let val = dv.getUint8(reader.cursor, true);
@@ -276,22 +289,11 @@ var parseState = function (state) {
                 reader.cursor += 4;
                 return val;
             }
-            // Bitfield types
             case 'u1':
-            case 'u2':
-            case 'u3':
-            case 'u4':
-            case 'u5':
-            case 'u6':
-            case 'u7':
-                return readBitfield(reader, parseInt(type.substring(1)));
-                break;
-
+                return readBitfield(reader, 1);
             default:
                 if (type in structs) {
-                    return readStruct(reader, structs[type]);
-                } else if (type in unions) {
-                    return readUnion(reader, unions[type]);
+                    return readVar(reader, structs[type]);
                 } else {
                     console.error(`Unknown type ${type}`);
                 }
@@ -301,7 +303,7 @@ var parseState = function (state) {
     var printVar = function(addr, name, type) {
         let value = readVar(new Reader(addr), type);
         globals[name] = value;
-        console.log(name + ' >>> ', value);
+        console.log(name + '\n', value);
     }
 
 /*    readU8(3, 0x3DBC, 'gEntCount');
@@ -320,7 +322,14 @@ var parseState = function (state) {
     printVar(0x2002C9C, 'gGlobalFlags', 'u1[4096]');
     printVar(0x2034350, 'gRoomVars', 'RoomVars');
     printVar(0x2033A90, 'gArea', 'Area');
-    printVar(0x2017660, 'gSmallChests', 'TileEntityDefinition[8]'); // TODO maybe only small chest?
+    //printVar(0x2017660, 'gSmallChests', 'TileEntityDefinition[8]'); // TODO maybe only small chest?
+    /*let TileEntityDefinition = {
+        'type': 'u8',
+        'param_a': 'u8',
+        'param_b': 'u16',
+        'param_c': 'u16',
+        'param_d': 'u16',
+    };*/
     printVar(0x2022750, 'gPlayerScriptExecutionContext', 'ScriptExecutionContext');
     printVar(0x2036570, 'gScriptExecutionContextArray', 'ScriptExecutionContext[0x20]');
 
@@ -348,7 +357,7 @@ var parseState = function (state) {
         }
     }
 
-    console.log(lists);
+    //console.log(lists);
 
     showLists(globals['gRoomControls'], lists, globals);
 }
@@ -378,7 +387,6 @@ function setupTabs() {
     let buttons = document.getElementsByClassName('tabbutton');
     for (let i = 0; i < buttons.length; i++) {
         let button = buttons[i];
-        console.log(button);
         if (!button.id.startsWith('tabb-')) {
             console.error(`Invalid tab button id: ${button.id}`);
         }
